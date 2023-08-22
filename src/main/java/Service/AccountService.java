@@ -21,6 +21,12 @@ public class AccountService {
     }
 
     public Account addAccount(Account account) {
+        System.out.println(account.getUsername());
+        System.out.println(account.getPassword());
+        System.out.println(accountDAO.getAccount(account));
+        if((account.getUsername()).length() == 0 || (account.getPassword()).length() < 4 || accountDAO.getAccount(account) != null) {
+            return null;
+        }
         return accountDAO.insertAccount(account);
     }
 

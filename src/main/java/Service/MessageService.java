@@ -2,11 +2,15 @@ package Service;
 
 import java.util.List;
 import java.util.*;
+
+import DAO.AccountDAO;
 import DAO.MessageDAO;
 import Model.Message;
+import Model.Account;
 
 public class MessageService {
     public MessageDAO messageDAO;
+    public AccountDAO accountDAO;
 
     /*  public Book addBook(Book book) {
         Book exist = bookDAO.getBookByIsbn(book.getIsbn());
@@ -21,17 +25,19 @@ public class MessageService {
 
     public MessageService() {
         messageDAO = new MessageDAO(); 
+        accountDAO = new AccountDAO();
     }
  
     public Message InsertMessage(Message message) {
-        if(message.getMessage_text().length() == 0 || message.getMessage_text().length() > 254 || message.getPosted_by() != accountDAO.getAccount_id(message.getPosted_by())) {
+        if(message.getMessage_text().length() == 0 || message.getMessage_text().length() > 254 || message.getPosted_by() != accountDAO.getAccount(message.getPosted_by())) { //was accountDAO.getAccount_id
             return null;
         } else 
         return messageDAO.insertMessage(message);
     }
 
-    public MessageService(MessageDAO messageDAO) {
+    public MessageService(MessageDAO messageDAO, AccountDAO accountDAO) {
         this.messageDAO = messageDAO;
+        this.accountDAO = accountDAO;
     }
 
     public Message deleteMessage(int id) {
@@ -40,7 +46,8 @@ public class MessageService {
 
     public Message patchMessage(int id, String text) {
         if(text.length() == 0 || text.length() > 255) 
-        return messageDAO.patchM
+        return messageDAO.patchMessage(id, text);
+        else return null;
     }
 
      public List<Message> getAllMessages() {
@@ -53,5 +60,9 @@ public class MessageService {
         } else{
             return messageDAO.insertMessage(message);
         }
+     }
+
+     public Message getMessageByMessageId(int id) {
+        return messageDAO.getMessageByMessageId(id);
      }
 }

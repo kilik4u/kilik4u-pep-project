@@ -22,12 +22,12 @@ import Service.MessageService;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
-    AccountDAO accountDAO = new AccountDAO();
-    AccountService accountService = new AccountService(accountDAO);
-   
+    //AccountDAO accountDAO; //= new AccountDAO();
+    AccountService accountService; //= new AccountService(accountDAO);
+    // MessageDAO messageDAO;
     MessageService messageService;
 
-    public SocialMediaController(AccountService accountService, MessageService messageService) {
+    public SocialMediaController() {
         this.accountService = new AccountService();
         this.messageService = new MessageService();
     }
@@ -84,12 +84,16 @@ public class SocialMediaController {
     private void registerHandler(Context context) throws JsonMappingException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(context.body(), Account.class);
-        if(accountService.addAccount(account) == null) {
+        Account newAccount = accountService.addAccount(account);
+        if(newAccount == null) {
             //context.json(mapper.writeValueAsString(newAccount));
+            System.out.println("hi");
             context.status(400);
 
         } else {
-            context.json(accountService.addAccount(account));
+            System.out.println("Bye");
+            System.out.println(newAccount);
+            context.json(newAccount);
             context.status(200);
         }
     }
@@ -112,11 +116,11 @@ public class SocialMediaController {
     } */
     ObjectMapper mapper = new ObjectMapper();
     Message message = mapper.readValue(context.body(), Message.class);
-    Message addedMessage = messageService.addMessage(message);
-    if(addedMessage!=null) {
-        context.json(mapper.writeValueAsString(addedMessage));
-    }else{
+    Message newMessage = messageService.addMessage(message);
+    if(newMessage == null) {
         context.status(400);
+    }else{
+        context.json(newMessage);
     }
 
     }
@@ -143,14 +147,18 @@ public class SocialMediaController {
 
     }
 
-    private void messageByIdHandler(Context context) {
-
+    private void messageByIdHandler(Context context) throws JsonProcessingException {
+        int fetchID = Integer.parseInt(context.pathParam("message_id"));
+        Message fetchMessage = messageService.getMessageByMessageId(fetchID);
+        if(fetchMessage != null) {
+            context.json(fetchMessage);
+        }
     }
 
     private void deleteMessageHandler(Context context) {
         int fetchID = Integer.parseInt(context.pathParam("message_id"));
-        if(messageDAO.deleteMessageHandler(fetchID) != null)
-        context.json(messageService.deleteMessageHandler(fetchID));
+        if(messageService.deleteMessage(fetchID) != null)
+        context.json(messageService.deleteMessage(fetchID));
     }
 
     private void patchMessageHandler(Context context) {
