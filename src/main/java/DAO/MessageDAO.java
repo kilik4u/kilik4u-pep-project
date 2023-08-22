@@ -9,6 +9,7 @@ import java.util.*;
 import Model.Message;
 import Util.ConnectionUtil;
 
+//need an InsertMessage, for MessageService class.
 
 
 public class MessageDAO {
