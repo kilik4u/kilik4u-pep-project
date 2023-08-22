@@ -1,6 +1,7 @@
 package Service;
 
 import DAO.AccountDAO;
+import Model.Account;
 
 public class AccountService {
     AccountDAO accountDAO;
@@ -11,6 +12,14 @@ public class AccountService {
 
     public AccountService(AccountDAO accountDAO) {
         this.accountDAO = accountDAO;
+    }
+
+    public List<Account> getAllAccounts(){
+        return accountDAO.getAllAccounts();
+    }
+
+    public Account addAccount(Account account) {
+        return accountDAO.insertAccount(account);
     }
     /*
      * public class AuthorService {
@@ -32,6 +41,9 @@ public class AccountService {
      */
    // public List<Author> getAllAuthors() {
      //   return authorDAO.getAllAuthors();
+    //}
+    //public Author addAuthor(Author author) {
+        //return authorDAO.insertAuthor(author);
     //}
     // */
 

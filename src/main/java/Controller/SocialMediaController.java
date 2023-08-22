@@ -4,6 +4,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
@@ -73,19 +74,20 @@ public class SocialMediaController {
             ctx.status(400);
         }
     }
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
-    private void registerHandler(Context context) {
+    
+    private void registerHandler(Context context) throws JsonMappingException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(context.body(), Account.class);
-        Account newAccount = accountService.addAccount(account);
-        if(newAccount!=null) {
+        if(accountService.addAccount(account) == null) {
             //context.json(mapper.writeValueAsString(newAccount));
-            System.out.println(newAccount);
-            context.json(newAccount);
-            context.status(200);
+            context.status(400);
 
         } else {
-            context.status(400);
+            context.json(accountService.addAccount(account));
+            context.status(200);
         }
     }
 
