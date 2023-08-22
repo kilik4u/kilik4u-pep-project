@@ -78,5 +78,43 @@ public class MessageDAO {
         return null;
     }
    
+    /*
+     *    public Book insertBook(Book book){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            //Write SQL logic here
+            String sql = "INSERT INTO Book(isbn, author_id, title, copies_available) VALUES (?,?,?,?)" ;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            //write preparedStatement's setString and setInt methods here.
+            preparedStatement.setInt(1, book.getIsbn());
+            preparedStatement.setInt(2, book.getAuthor_id());
+            preparedStatement.setString(3, book.getTitle());
+            preparedStatement.setInt(4, book.getCopies_available());
+            preparedStatement.executeUpdate();
+            return book;
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+     */
+    public Message insertMessage(Message message) {
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "INSERT INTO Message(message_id, posted_by,message_text,time_posted_epoch) VALUES (?,?,?,?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, message.getMessage_id());
+            preparedStatement.setInt(2, message.getPosted_by());
+            preparedStatement.setString(3, message.getMessage_text());
+            preparedStatement.setFloat(4, message.getTime_posted_epoch());
+            preparedStatement.executeUpdate();
+            return message;
+        }catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    return null;
 }
 

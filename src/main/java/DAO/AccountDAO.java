@@ -10,7 +10,7 @@ import java.util.*;
 import Model.Account;
 
 import Util.ConnectionUtil;
-//THIS DAO IS FINISHED
+//THIS needs getAccount
 public class AccountDAO {
 
     public List<Account> getAllAccounts(){
