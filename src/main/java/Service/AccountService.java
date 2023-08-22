@@ -23,6 +23,12 @@ public class AccountService {
     public Account addAccount(Account account) {
         return accountDAO.insertAccount(account);
     }
+
+    public Account getAccount(Account account) {
+        if(accountDAO.getAccount(account) != null) 
+        return accountDAO.getAccount(account);
+        else return null;
+    }
     /*
      * public class AuthorService {
     private AuthorDAO authorDAO;

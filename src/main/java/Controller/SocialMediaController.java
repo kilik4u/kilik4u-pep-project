@@ -3,6 +3,8 @@ package Controller;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import Model.Account;
 import Model.Message;
 import DAO.AccountDAO;
+import DAO.MessageDAO;
 import Service.AccountService;
 import Service.MessageService;
 
@@ -122,7 +125,8 @@ public class SocialMediaController {
        //   private void getAllAuthorsHandler(Context ctx) {
        // List<Author> authors = authorService.getAllAuthors();
        // ctx.json(authors);
-        
+        List<Message> messages = messageService.getAllMessages();
+        context.json(messages);
        
     }
 
@@ -144,11 +148,20 @@ public class SocialMediaController {
     }
 
     private void deleteMessageHandler(Context context) {
-
+        int fetchID = Integer.parseInt(context.pathParam("message_id"));
+        if(messageDAO.deleteMessageHandler(fetchID) != null)
+        context.json(messageService.deleteMessageHandler(fetchID));
     }
 
     private void patchMessageHandler(Context context) {
-
+        String patchText = context.body();
+        int fetchID = Integer.parseInt(context.pathParam("message_id"));
+        Message patchMessage = messageService.patchMessage(fetchID, patchText);
+        if(patchMessage != null) {
+            context.json(patchMessage);
+        } else {
+            context.status(400);
+        }
     }
 
     private void getAllMessagesByIdHandler(Context context) {

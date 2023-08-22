@@ -99,6 +99,23 @@ public class MessageDAO {
         return null;
     }
      */
+
+     public Message deleteMessage(int id) {
+        Connection connection = ConnectionUtil.getConnection();
+        Message deleteMessage = getMessageByMessageId(id);
+        if(deleteMessage == null) {
+            return null;
+        }
+        try {
+            String sql = "DELETE FROM Message WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        }catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return deleteMessage;
+     }
     public Message insertMessage(Message message) {
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -114,7 +131,7 @@ public class MessageDAO {
         }catch(SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
+    
     return null;
 }
-
+}
