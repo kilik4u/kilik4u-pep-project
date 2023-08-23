@@ -29,10 +29,12 @@ public class MessageService {
     }
  
     public Message InsertMessage(Message message) {
-        if(message.getMessage_text().length() == 0 || message.getMessage_text().length() > 254 || message.getPosted_by() != accountDAO.getAccount(message.getPosted_by())) { //was accountDAO.getAccount_id
+        if((message.getMessage_text()).length() < 1 || (message.getMessage_text()).length() >= 255) { //|| message.getPosted_by() != accountDAO.getAccount(message.getPosted_by())) { //was accountDAO.getAccount_id
             return null;
-        } else 
-        return messageDAO.insertMessage(message);
+        } else if(message.getPosted_by() != (accountDAO.getAccount_id(message.getPosted_by()))) {
+            return null;
+        }
+            return messageDAO.insertMessage(message);
     }
 
     public MessageService(MessageDAO messageDAO, AccountDAO accountDAO) {

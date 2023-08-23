@@ -30,6 +30,26 @@ public class AccountDAO {
         return accounts;
     }
 
+    public int getAccount_id(int message_id) {
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "SELECT account_id FROM account WHERE account_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, message_id);
+
+            preparedStatement.executeUpdate();
+
+            ResultSet pkey = preparedStatement.getGeneratedKeys();
+            while(pkey.next()) {
+                int generated_account_id = (int) pkey.getLong(1);
+                return generated_account_id;
+            }
+        }catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+
         public Account insertAccount(Account account){
             Connection connection = ConnectionUtil.getConnection();
             try {
@@ -109,7 +129,5 @@ public class AccountDAO {
     }
      */
 
-		public int getAccount(int posted_by) {
-			return 0;
-		}
+	
 }
