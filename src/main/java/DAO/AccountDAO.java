@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.*;
 import Model.Account;
-
+import Model.Message;
 import Util.ConnectionUtil;
 //THIS needs getAccount
 public class AccountDAO {
@@ -30,24 +30,25 @@ public class AccountDAO {
         return accounts;
     }
 
-    public int getAccount_id(int message_id) {
+    public Account getAccount_id(int account_id) {
         Connection connection = ConnectionUtil.getConnection();
         try {
-            String sql = "SELECT account_id FROM account WHERE account_id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setInt(1, message_id);
+            String sql = "SELECT * FROM Account WHERE account_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            
+            preparedStatement.setInt(1,account_id);
+           
 
-            preparedStatement.executeUpdate();
-
-            ResultSet pkey = preparedStatement.getGeneratedKeys();
-            while(pkey.next()) {
-                int generated_account_id = (int) pkey.getLong(1);
-                return generated_account_id;
+            ResultSet rs = preparedStatement.executeQuery();
+            if(rs.next()) {
+               String username = rs.getString("username");
+               String password = rs.getString("password");
+               return new Account(account_id, username, password);
             }
         }catch(SQLException e) {
             System.out.println(e.getMessage());
         }
-        return 0;
+        return null;
     }
 
         public Account insertAccount(Account account){
@@ -87,7 +88,56 @@ public class AccountDAO {
             }
             return null;
         }
-    /*    public Author insertAuthor(Author author){
+
+        public List<Message> getMessagesByAccountId(int account_id) {
+            List<Message> messages = new ArrayList<>();
+            Connection connection = ConnectionUtil.getConnection();
+
+            try {
+                String sql = "SELECT * FROM Message WHERE posted_by = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setInt(1, account_id);
+
+                ResultSet rs = preparedStatement.executeQuery();
+                while(rs.next()) {
+                    int message_id = rs.getInt("message_id");
+                    String message_text = rs.getString("message_text");
+                    long time_posted_epoch = rs.getLong("time_posted_epoch");
+
+                    Message message = new Message(message_id, account_id, message_text, time_posted_epoch);
+                    messages.add(message);
+                }
+            }catch(SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            return messages;
+        }
+    /*  // Method to retrieve messages by account ID from the database
+    private static List<Message> getMessagesByAccountId(int accountId) {
+        List<Message> messages = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/social_media_db", "username", "password")) {
+            String sql = "SELECT * FROM message WHERE posted_by = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, accountId);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int messageId = rs.getInt("message_id");
+                String messageText = rs.getString("message_text");
+                long timePostedEpoch = rs.getLong("time_posted_epoch");
+
+                Message message = new Message(messageId, accountId, messageText, timePostedEpoch);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return messages;
+    }
+
+     public Author insertAuthor(Author author){
         Connection connection = ConnectionUtil.getConnection();
         try {
 //          Write SQL logic here. You should only be inserting with the name column, so that the database may

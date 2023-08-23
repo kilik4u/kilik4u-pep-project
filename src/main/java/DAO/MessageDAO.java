@@ -15,6 +15,14 @@ import Util.ConnectionUtil;
 
 public class MessageDAO {
 
+    public Message create(Message message) {
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "INSERT INTO message (posted_by, message_text,)"
+        }
+    }
+
 
     /*      
      * 
@@ -152,11 +160,11 @@ public class MessageDAO {
            
             preparedStatement.setInt(1, message.getPosted_by());
             preparedStatement.setString(2, message.getMessage_text());
-            preparedStatement.setFloat(3, message.getTime_posted_epoch());
+            preparedStatement.setLong(3, message.getTime_posted_epoch());
            
             preparedStatement.executeUpdate();
             ResultSet rs = preparedStatement.getGeneratedKeys();
-            while(rs.next()) {
+            if(rs.next()) {
                 int generated_message_id = (int) rs.getLong(1);
                 return new Message(generated_message_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
             }

@@ -173,7 +173,8 @@ public class SocialMediaController {
     }
 
     private void getAllMessagesByIdHandler(Context context) {
-
+        int account_id = Integer.parseInt(context.pathParam("account_id"));
+        List<Message> messages = getMessagesByAccountId(account_id);
     }    
 
    
