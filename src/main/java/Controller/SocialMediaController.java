@@ -131,8 +131,10 @@ public class SocialMediaController {
         Account authenticatedAccount = accountService.authenticatedAccount(account.getUsername(), account.getPassword());
         if(authenticatedAccount != null) {
             context.json(authenticatedAccount);
+            System.out.println("HI");
         }else{
             context.status(401).json("");
+            System.out.println("bye");
         }
         
 

@@ -49,12 +49,14 @@ public class AccountService {
     }
 
     public Account authenticatedAccount(String username, String password) {
-        return null;
+        return accountDAO.getAccountByUsername(username, password);
+      //was username. NO password at all.
     }
 
     public Account getAccountByUsername(String username) {
-        return accountDAO.getUsername(username);
-    }
+       //was (username)
+        return accountDAO.getAccountByUsername(username, username);
+      }
 
 
 
