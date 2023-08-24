@@ -17,10 +17,26 @@ public class MessageDAO {
 
     public Message create(Message message) {
         Connection connection = ConnectionUtil.getConnection();
-
         try {
-            String sql = "INSERT INTO message (posted_by, message_text,)"
+            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?,?,?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, message.getPosted_by());
+            preparedStatement.setString(2, message.getMessage_text());
+            preparedStatement.setLong(3, message.getTime_posted_epoch());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+                if(rowsAffected == 1) {
+                    ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    if(generatedKeys.next()) {
+                        int messageId = generatedKeys.getInt(1);
+                        message.setMessage_id(messageId);
+                        return message;
+                    }
+                }
+        }catch(SQLException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
 

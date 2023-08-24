@@ -35,30 +35,19 @@ public class SocialMediaController {
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
      * suite must receive a Javalin object from this method.
      * @return a Javalin app object which defines the behavior of the Javalin controller.
-     *    Javalin app = Javalin.create();
-        app.get("/books", this::getAllBooksHandler);
-        app.post("/books", this::postBookHandler);
-        app.get("/authors", this::getAllAuthorsHandler);
-        app.post("/authors", this::postAuthorHandler);
-        app.get("/books/available", this::getAvailableBooksHandler);
-        app.start(8080);
-    }
-    logins, registrations, message creations, message updates, and message deletions.
-
-
      */
 
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::registerHandler);
         //app.post("/register", this::postRegisterHandler);
-        app.post("/messages", this::postMessageHandler);
+        app.post("/messages", this::createMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
         //app.post("/messages", this::)
         app.post("/login", this::loginHandler);
         app.get("/messages/{message_id}", this::messageByIdHandler);
         app.delete("/messages/{message_id}", this::deleteMessageHandler);
-        app.patch("/messages/{message_id}", this::patchMessageHandler);
+        app.patch("/messages/{message_id}", this::updateMessageHandler);
         app.get("/accounts/{account_id}/messages", this::getAllMessagesByIdHandler);
 
         return app;
@@ -67,92 +56,94 @@ public class SocialMediaController {
     /**
      * This is an example handler for an example endpoint.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
-     *     private void postAuthorHandler(Context ctx) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Author author = mapper.readValue(ctx.body(), Author.class);
-        Author addedAuthor = authorService.addAuthor(author);
-        if(addedAuthor!=null){
-            ctx.json(mapper.writeValueAsString(addedAuthor));
-        }else{
-            ctx.status(400);
-        }
-    }
-     * @throws JsonProcessingException
-     * @throws JsonMappingException
+ 
+     * 
      */
     
-    private void registerHandler(Context context) throws JsonMappingException, JsonProcessingException {
+    private void registerHandler(Context context) {
+        AccountService accountService = new AccountService();
         ObjectMapper mapper = new ObjectMapper();
-        Account account = mapper.readValue(context.body(), Account.class);
-        Account newAccount = accountService.addAccount(account);
-        if(newAccount == null) {
+        Account account = context.bodyAsClass(Account.class);
+        
+        if(account.getUsername() == null || account.getPassword() == null || account.getPassword().length() < 4)  {
             //context.json(mapper.writeValueAsString(newAccount));
             System.out.println("hi");
-            context.status(400);
-
-        } else {
-            System.out.println("Bye");
-            System.out.println(newAccount);
-            context.json(newAccount);
-            context.status(200);
+            context.status(400).json("");
+            return;
+        } 
+        Account existingAccount = accountService.getAccountByUsername(account.getUsername());
+        if(existingAccount != null) {
+            context.status(400).json("");
+            return;
         }
-    }
-
-    private void postMessageHandler(Context context) throws JsonProcessingException {
-        /* As a user, I should be able to submit a new post on the endpoint POST localhost:8080/messages. The request body will contain a JSON representation of a message, which should be persisted to the database, but will not contain a message_id.
-
-- The creation of the message will be successful if and only if the message_text is not blank, is under 255 characters, and posted_by refers to a real, existing user. If successful, the response body should contain a JSON of the message, including its message_id. The response status should be 200, which is the default. The new message should be persisted to the database.
-- If the creation of the message is not successful, the response status should be 400. (Client error)
-
-          private void postBookHandler(Context ctx) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Book book = mapper.readValue(ctx.body(), Book.class);
-        Book addedBook = bookService.addBook(book);
-        if(addedBook!=null){
-            ctx.json(mapper.writeValueAsString(addedBook));
+        Account createdAccount = accountService.createAccount(account);
+        if(createdAccount != null) {
+            context.status(200).json(createdAccount);
         }else{
-            ctx.status(400);
+            context.status(400).json("");
         }
-    } */
-    ObjectMapper mapper = new ObjectMapper();
-    Message message = mapper.readValue(context.body(), Message.class);
-    Message newMessage = messageService.addMessage(message);
-    if(newMessage == null) {
-        context.status(400);
-    }else{
-        context.json(newMessage);
-    }
+        }
+    
+
+    private void createMessageHandler(Context context) {
+        MessageService messageService = new MessageService();
+        Message message = context.bodyAsClass(Message.class);
+        
+        AccountService accountService = new AccountService();
+        Account postedByAccount = accountService.getAccountById(message.getPosted_by());
+
+        if(postedByAccount == null) {
+            context.status(400).json("");
+            return ;
+        }
+        if (message.getMessage_text() == null || message.getMessage_text().trim().isEmpty() || message.getMessage_text().length() > 254) {
+            context.status(400).json("");
+            return ;
+        }
+        Message createdMessage = messageService.createMessage(message);
+        if (createdMessage != null) {
+            context.status(200).json(createdMessage);
+        } else {
+            context.status(400).json("");
+        }
 
     }
 
     private void getAllMessagesHandler(Context context) {
-       //   private void getAllAuthorsHandler(Context ctx) {
-       // List<Author> authors = authorService.getAllAuthors();
-       // ctx.json(authors);
+        MessageService messageService = new MessageService();
         List<Message> messages = messageService.getAllMessages();
-        context.json(messages);
-       
+    
+        if (messages != null && !messages.isEmpty()) {
+            context.status(200).json(messages); 
+        } else {
+            context.status(200).json(new ArrayList<Message>());
+        }
     }
 
-    private void loginHandler(Context context) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Account account = mapper.readValue(context.body(), Account.class);
-        Account gotAccount = accountService.getAccount(account);
-        if(gotAccount != null) {
-            context.json(gotAccount);
-            context.status(200);
-        }else 
-            context.status(401);
+    private void loginHandler(Context context)  {
+        AccountService accountService = new AccountService();
+        Account account = context.bodyAsClass(Account.class);
+        Account authenticatedAccount = accountService.authenticatedAccount(account.getUsername(), account.getPassword());
+        if(authenticatedAccount != null) {
+            context.json(authenticatedAccount);
+        }else{
+            context.status(401).json("");
+        }
         
 
     }
 
-    private void messageByIdHandler(Context context) throws JsonProcessingException {
-        int fetchID = Integer.parseInt(context.pathParam("message_id"));
-        Message fetchMessage = messageService.getMessageByMessageId(fetchID);
-        if(fetchMessage != null) {
-            context.json(fetchMessage);
+    private void messageByIdHandler(Context context)  {
+        MessageService messageService = new MessageService();
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message message = messageService.getMessageById(messageId);
+    
+        if (message != null) {
+            context.json(message);
+        } else {
+            context.status(200).json(""); 
         }
+        
     }
 
     private void deleteMessageHandler(Context context) {
@@ -161,7 +152,7 @@ public class SocialMediaController {
         context.json(messageService.deleteMessage(fetchID));
     }
 
-    private void patchMessageHandler(Context context) {
+    private void updateMessageHandler(Context context) {
         String patchText = context.body();
         int fetchID = Integer.parseInt(context.pathParam("message_id"));
         Message patchMessage = messageService.patchMessage(fetchID, patchText);
@@ -173,8 +164,8 @@ public class SocialMediaController {
     }
 
     private void getAllMessagesByIdHandler(Context context) {
-        int account_id = Integer.parseInt(context.pathParam("account_id"));
-        List<Message> messages = getMessagesByAccountId(account_id);
+        //int account_id = Integer.parseInt(context.pathParam("account_id"));
+        //List<Message> messages = getMessagesByAccountId(account_id);
     }    
 
    
