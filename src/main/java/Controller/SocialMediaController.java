@@ -4,6 +4,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -11,8 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
 import Model.Message;
-import DAO.AccountDAO;
-import DAO.MessageDAO;
+//import DAO.AccountDAO;
+//import DAO.MessageDAO;
 import Service.AccountService;
 import Service.MessageService;
 
@@ -27,7 +28,7 @@ public class SocialMediaController {
     // MessageDAO messageDAO;
     MessageService messageService;
 
-    public SocialMediaController() {
+    public SocialMediaController(AccountService accountService, MessageService messageService) {
         this.accountService = new AccountService();
         this.messageService = new MessageService();
     }
@@ -36,6 +37,10 @@ public class SocialMediaController {
      * suite must receive a Javalin object from this method.
      * @return a Javalin app object which defines the behavior of the Javalin controller.
      */
+
+        public SocialMediaController() {
+
+        }
 
     public Javalin startAPI() {
         Javalin app = Javalin.create();
@@ -111,7 +116,7 @@ public class SocialMediaController {
 
     private void getAllMessagesHandler(Context context) {
         MessageService messageService = new MessageService();
-        List<Message> messages = messageService.getAllMessages();
+        List<Message> messages = messageService.findAllMessages();
     
         if (messages != null && !messages.isEmpty()) {
             context.status(200).json(messages); 
@@ -147,27 +152,48 @@ public class SocialMediaController {
     }
 
     private void deleteMessageHandler(Context context) {
-        int fetchID = Integer.parseInt(context.pathParam("message_id"));
-        if(messageService.deleteMessage(fetchID) != null)
-        context.json(messageService.deleteMessage(fetchID));
+        MessageService messageService = new MessageService();
+        
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message deletedMessage = messageService.deleteMessage(messageId);
+        if (deletedMessage != null) {
+            context.json(deletedMessage);
+        } else {
+            context.status(200).json(""); 
+        }
     }
 
     private void updateMessageHandler(Context context) {
-        String patchText = context.body();
-        int fetchID = Integer.parseInt(context.pathParam("message_id"));
-        Message patchMessage = messageService.patchMessage(fetchID, patchText);
-        if(patchMessage != null) {
-            context.json(patchMessage);
+        MessageService messageService = new MessageService();
+        
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        String updatedMessageText = context.body();
+        if (updatedMessageText == null || updatedMessageText.trim().isEmpty()) {
+            context.status(400).json(""); 
+            return;
+        }
+        Message updatedMessage = messageService.updateMessage(messageId, updatedMessageText);
+    
+        if (updatedMessage != null) {
+            
+            context.status(200).json(updatedMessage);
         } else {
-            context.status(400);
+            context.status(400).json("");
         }
     }
 
     private void getAllMessagesByIdHandler(Context context) {
-        //int account_id = Integer.parseInt(context.pathParam("account_id"));
-        //List<Message> messages = getMessagesByAccountId(account_id);
-    }    
+        MessageService messageService = new MessageService();
+    
+        int userId = Integer.parseInt(context.pathParam("account_id"));
+        List<Message> userMessages = messageService.findByUserId(userId);
+    
+        if (!userMessages.isEmpty()) {
+            context.status(200).json(userMessages);
+        } else {
+            context.status(200).json(new ArrayList<Message>()); 
+        }
 
    
-
+    }
 }

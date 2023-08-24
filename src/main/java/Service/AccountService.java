@@ -16,50 +16,30 @@ public class AccountService {
         this.accountDAO = accountDAO;
     }
 
-    public List<Account> getAllAccounts(){
-        return accountDAO.getAllAccounts();
-    }
-
-    public Account addAccount(Account account) {
-        System.out.println(account.getUsername());
-        System.out.println(account.getPassword());
-        System.out.println(accountDAO.getAccount(account));
-        if((account.getUsername()).length() == 0 || (account.getPassword()).length() < 4 || accountDAO.getAccount(account) != null) {
-            return null;
-        }
-        return accountDAO.insertAccount(account);
-    }
-
-    public Account getAccount(Account account) {
-        if(accountDAO.getAccount(account) != null) 
-        return accountDAO.getAccount(account);
-        else return null;
-    }
-    /*
-     * public class AuthorService {
-    private AuthorDAO authorDAO;
+  
     
-     * no-args constructor for creating a new AuthorService with a new AuthorDAO.
-     * There is no need to change this constructor.
-     
-    public AuthorService(){
-        authorDAO = new AuthorDAO();
+
+    //hmmm
+
+    public Account getAccountByUsername(String username) {
+        return null;
     }
-     public AuthorService(AuthorDAO authorDAO){
-        this.authorDAO = authorDAO;
+
+    public Account createAccount(Account account) {
+        //checking if username is not empty, or password is at least 4 or greater long, and making sure accnt does not exist.
+       if (account.getUsername().length() != 0 || account.getPassword().length() >= 4 || accountDAO.insertAccount(account) != null) {
+        return this.accountDAO.insertAccount(account); //looks back at DAO class for the method's name you would want to use
+       }
+       return null;
     }
-    /**
-     * TODO: Use the AuthorDAO to retrieve all authors.
-     *
-     * @return all authors
-     */
-   // public List<Author> getAllAuthors() {
-     //   return authorDAO.getAllAuthors();
-    //}
-    //public Author addAuthor(Author author) {
-        //return authorDAO.insertAuthor(author);
-    //}
-    // */
+
+    public Account getAccountById(int posted_by) {
+        return null;
+    }
+
+    public Account authenticatedAccount(String username, String password) {
+        return null;
+    }
 
 
 
