@@ -10,7 +10,7 @@ import java.util.*;
 import Model.Message;
 import Util.ConnectionUtil;
 
-//need an InsertMessage, for MessageService class.
+
 
 
 public class MessageDAO {
@@ -70,29 +70,6 @@ public class MessageDAO {
         return null;
      } 
 
-     /*   public Book getBookByIsbn(int isbn){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-            //Write SQL logic here
-            String sql = "SELECT * FROM Book WHERE isbn = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            //write preparedStatement's setInt method here.
-            preparedStatement.setInt(1, isbn);
-            ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()){
-                Book book = new Book(rs.getInt("isbn"),
-                        rs.getInt("author_id"),
-                        rs.getString("title"),
-                        rs.getInt("copies_available"));
-                return book;
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    } */
-
     public Message findById(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -144,27 +121,7 @@ public class MessageDAO {
         } 
         return new ArrayList<>();
     }
-    /*
-     *    public Book insertBook(Book book){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-            //Write SQL logic here
-            String sql = "INSERT INTO Book(isbn, author_id, title, copies_available) VALUES (?,?,?,?)" ;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            //write preparedStatement's setString and setInt methods here.
-            preparedStatement.setInt(1, book.getIsbn());
-            preparedStatement.setInt(2, book.getAuthor_id());
-            preparedStatement.setString(3, book.getTitle());
-            preparedStatement.setInt(4, book.getCopies_available());
-            preparedStatement.executeUpdate();
-            return book;
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-     */
+  
     public boolean deleteById(int messageId) {
         Connection connection = ConnectionUtil.getConnection();
         
@@ -191,11 +148,24 @@ public class MessageDAO {
         
     }
 
-    public Message update(Message message ) {
+    public void update(int message_id, String updatedMessageText) {
         Connection connection = ConnectionUtil.getConnection();
-
-     Message updatedMessage = null;
-        try {
+            try {
+                String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ps.setString(1, updatedMessageText);
+                ps.setInt(2, message_id);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+    
+        //Message updatedMessage = new Message(message.getMessage_id(), message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
+   //
+   
+   
+   //Message updatedMessage = null;
+      /*   try {
             String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
         
@@ -205,50 +175,25 @@ public class MessageDAO {
             statement.setInt(4, message.getMessage_id());
 
             int rowsUpdated = statement.executeUpdate();
+            System.out.println("DAO ok");
          if (rowsUpdated > 0) {
    
                 
-               
-             return null;
+            System.out.println("DAO Rows");
+             return updatedMessage; //was null
                 
             
-        } else {
-                return message;
-           }
+        } else 
+            System.out.println("DAO ELSE");
+                return null;  //was mesesage
+           
             
         } catch (SQLException e) {
            e.printStackTrace();
          
         }
 
-        return updatedMessage;
-    }
-    /*public Message update(Message message) {
-    String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?";
-
-    try (Connection connection = ConnectionUtil.getConnection();
-         PreparedStatement statement = connection.prepareStatement(sql)) {
-
-        statement.setInt(1, message.getPosted_by());
-        statement.setString(2, message.getMessage_text());
-        statement.setLong(3, message.getTime_posted_epoch());
-        statement.setInt(4, message.getMessage_id());
-
-        int rowsUpdated = statement.executeUpdate();
-
-        // If rows were updated, return the message, otherwise return null
-        return rowsUpdated > 0 ? message : null;
-
-    } catch (SQLException e) {
-        // Replace with proper logging or rethrow as needed
-        throw new RuntimeException("Error updating the message", e);
-    }
-}
- */
-
-  
- 
-
-   
+        return null; //was updatedMessage
+    */ 
     }
 

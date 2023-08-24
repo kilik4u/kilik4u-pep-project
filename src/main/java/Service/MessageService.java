@@ -1,13 +1,15 @@
 package Service;
 
 import java.util.List;
+
+import DAO.MessageDAO;
+
 import java.util.*;
 
 
-import DAO.MessageDAO;
 import Model.Message;
 import Model.Account;
-//import DAO.AccountDAO;
+
 public class MessageService {
     public MessageDAO messageDAO;
    
@@ -17,7 +19,7 @@ public class MessageService {
     }
 
     public Message createMessage(Message message) {
-        //creating new message 
+        
         return messageDAO.create(message);
     }
 
@@ -41,29 +43,49 @@ public class MessageService {
         return null;
      }
      public Message updateMessage(int message_id, String updatedMessageText) {
-                         
+            try {
+                if (updatedMessageText.isEmpty() || updatedMessageText.length() > 254 || MessageDAO.getMessageByID(message_id) == null) {
+                    return null;
+                } else {
+                    messageDAO.updateMessage(message_id, updatedMessageText);
+                    return messageDAO.getMessageByID(message_id);
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
     
         
-        if (updatedMessageText != null && !updatedMessageText.trim().isEmpty()) {
-            Message existingMessage = messageDAO.findById(message_id);
-    
-            if (existingMessage != null) {
-                existingMessage.setMessage_text(updatedMessageText);
-                return messageDAO.update(existingMessage);
-            }
+       // if (updatedMessageText.isEmpty() || updatedMessageText.length() > 254 || messageDAO.findById(message_id) == null) {
+         //   System.out.println("Service ok");
+           // return null;
+        //} else {
+          //messageDAO.update(message_id, updatedMessageText);
+            //  Message existingMessage = messageDAO.findById(message_id);
+          //  if (existingMessage != null) {
+               
+              //  System.out.println("service Existing");
+            //    existingMessage.setMessage_text(updatedMessageText);
+              
+                //return messageDAO.update(existingMessage);
+            
+        
+        }  
+      
+  //  } 
+/*public Message updateMessage(int message_id, String updatedMessageText) {
+    if (updatedMessageText != null && !updatedMessageText.isEmpty()) {
+        Message existingMessage = messageDAO.findById(message_id);
+        if (existingMessage != null) {
+            existingMessage.setMessage_text(updatedMessageText);
+            return messageDAO.u
+        return null;pdate(existingMessage);
         }
-        return null;
     }
-    /*public Message updateMessage(int messageId, String newMessageText) {
-    // ... [your validations and update logic here]
-
-    // Update the message
-    existingMessage.setMessage_text(newMessageText);
-    messageDAO.update(existingMessage);  // Assuming this updates the message in the database.
-
-    // Fetch the updated message from the database
-    return messageDAO.findById(messageId);
+    return null;
 }
-
  */
+        return null;
 }
+}
+

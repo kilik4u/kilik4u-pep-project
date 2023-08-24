@@ -8,13 +8,12 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import DAO.MessageDAO;
 import Model.Account;
 import Model.Message;
-//import DAO.AccountDAO;
-//import DAO.MessageDAO;
 import Service.AccountService;
 import Service.MessageService;
 
@@ -24,9 +23,8 @@ import Service.MessageService;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
-    //AccountDAO accountDAO; //= new AccountDAO();
-    AccountService accountService; //= new AccountService(accountDAO);
-    // MessageDAO messageDAO;
+    
+    AccountService accountService; 
     MessageService messageService;
 
     public SocialMediaController(AccountService accountService, MessageService messageService) {
@@ -92,7 +90,7 @@ public class SocialMediaController {
     
 
     private void createMessageHandler(Context context) {
-        MessageService messageService = new MessageService();
+      MessageService messageService = new MessageService();
         Message message = context.bodyAsClass(Message.class);
         
         AccountService accountService = new AccountService();
@@ -166,52 +164,51 @@ public class SocialMediaController {
         }
     }
 
-    private void updateMessageHandler(Context context) {
+    private void updateMessageHandler(Context context) throws JsonMappingException, JsonProcessingException {
         MessageService messageService = new MessageService();
-        
-        int messageId = Integer.parseInt(context.pathParam("message_id"));
-        String updatedMessageText = context.body();
-        if (updatedMessageText == null || updatedMessageText.trim().isEmpty() || updatedMessageText.length() > 255) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(context.body());
+        String updatedMessageText = jsonNode.get("message_text").asText();
+      //  Message mess = mapper.readValue(context.body(), Message.class);
+      //  String updatedMessageText = message.getMessage_text();
+        int message_id = Integer.parseInt(context.pathParam("message_id"));
+       // String updatedMessageText = context.body();
+        //String updatedMessageText = context.formParam("message_text");
+       // Message updatedMessage = messageService.updateMessage(message_id, updatedMessageText);
+        if (updatedMessageText == null || updatedMessageText.trim().isEmpty() || updatedMessageText.length() >= 255) {
             context.status(400).json(""); 
+            System.out.println("it works");
             return;
         }
-        Message updatedMessage = messageService.updateMessage(messageId, updatedMessageText);
-    
+       Message updatedMessage = messageService.updateMessage(message_id, updatedMessageText);
+       
         if (updatedMessage != null) {
-            context.status(200).json(updatedMessage);
+          System.out.println("IT WORKS");
+            mapper.writeValueAsString(updatedMessage);
+            context.status(200).json(" ");
            
         } else {
             context.status(400).json("");
         }
     }
+  
+/*private void updateMessageHandler(Context context) throws JsonMappingException, JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper(); // Create a Jackson ObjectMapper to handle JSON parsing
+    JsonNode jsonNode = mapper.readTree(context.body()); // Parse the request body into a JsonNode
+    String updatedMessageText = jsonNode.get("message_text").asText(); // Extract the message_text field
 
-    /*private void updateMessageHandler(Context context) {
-    MessageService messageService = new MessageService(); // Consider using dependency injection
-
-    int messageId = Integer.parseInt(context.pathParam("message_id"));
-
-    // Assuming you're receiving a JSON payload, it's often better to map this to an object.
-    // However, for simplicity, if you're just getting plain text, the below works.
-    String updatedMessageText = context.body();
-
-    // Validation checks
-    if (updatedMessageText == null || updatedMessageText.trim().isEmpty() || updatedMessageText.length() > 255) {
-        context.status(400).json("Message text is invalid"); 
-        return;
-    }
-
-    Message updatedMessage = messageService.updateMessage(messageId, updatedMessageText);
+    // Your existing logic to update the message, using updatedMessageText
 
     if (updatedMessage != null) {
-        context.status(200).json(updatedMessage);
+        System.out.println("IT WORKS");
+        context.status(200).json(updatedMessage); // Return the updated message as the response body
     } else {
-        context.status(400).json("Failed to update the message");
+        context.status(400).json("");
     }
 }
-
-
-    
  */
+    
+ 
     private void getAllMessagesByIdHandler(Context context) {
         MessageService messageService = new MessageService();
     
@@ -224,6 +221,6 @@ public class SocialMediaController {
             context.status(200).json(new ArrayList<Message>()); 
         }
 
-   
+    
     }
 }
