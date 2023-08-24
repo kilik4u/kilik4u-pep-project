@@ -112,72 +112,12 @@ public class AccountDAO {
             }
             return messages;
         }
-    /*  // Method to retrieve messages by account ID from the database
-    private static List<Message> getMessagesByAccountId(int accountId) {
-        List<Message> messages = new ArrayList<>();
-
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/social_media_db", "username", "password")) {
-            String sql = "SELECT * FROM message WHERE posted_by = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, accountId);
-
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                int messageId = rs.getInt("message_id");
-                String messageText = rs.getString("message_text");
-                long timePostedEpoch = rs.getLong("time_posted_epoch");
-
-                Message message = new Message(messageId, accountId, messageText, timePostedEpoch);
-                messages.add(message);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+   
+        //hmmmmm
+        
+        public Account getUsername(String username) {
+            return null;
         }
-
-        return messages;
-    }
-
-     public Author insertAuthor(Author author){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-//          Write SQL logic here. You should only be inserting with the name column, so that the database may
-//          automatically generate a primary key.
-            String sql = "INSERT INTO Author (name) VALUES (?)" ;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-
-            //write preparedStatement's setString method here.
-            preparedStatement.setString(1, author.getName());
-            preparedStatement.executeUpdate();
-            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
-            if(pkeyResultSet.next()){
-                int generated_author_id = (int) pkeyResultSet.getLong(1);
-                return new Author(generated_author_id, author.getName());
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-}
-
-     *  public List<Author> getAllAuthors(){
-        Connection connection = ConnectionUtil.getConnection();
-        List<Author> authors = new ArrayList<>();
-        try {
-            //Write SQL logic here
-            String sql = "SELECT * FROM Author";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()){
-                Author author = new Author(rs.getInt("id"), rs.getString("name"));
-                authors.add(author);
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return authors;
-    }
-     */
 
 	
 }

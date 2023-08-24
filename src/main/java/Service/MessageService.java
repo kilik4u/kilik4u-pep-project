@@ -12,17 +12,6 @@ public class MessageService {
     public MessageDAO messageDAO;
    
 
-    /*  public Book addBook(Book book) {
-        Book exist = bookDAO.getBookByIsbn(book.getIsbn());
-        if (exist != null) {
-            return null;
-        } else {
-        return bookDAO.insertBook(book);
-    }
-}
-     * 
-     */
-
     public MessageService() {
         messageDAO = new MessageDAO(); 
     }
