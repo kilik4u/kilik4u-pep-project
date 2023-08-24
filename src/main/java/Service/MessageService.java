@@ -42,13 +42,13 @@ public class MessageService {
         }
         return null;
      }
-     public Message updateMessage(int message_id, String updatedMessageText) {
+     public Message updateMessage(int message_id, String updatedText) {
             try {
-                if (updatedMessageText.isEmpty() || updatedMessageText.length() > 254 || MessageDAO.getMessageByID(message_id) == null) {
+                if (updatedText.isEmpty() || updatedText.length() > 254 || messageDAO.findById(message_id) == null) {
                     return null;
                 } else {
-                    messageDAO.updateMessage(message_id, updatedMessageText);
-                    return messageDAO.getMessageByID(message_id);
+                    messageDAO.update(message_id, updatedText);
+                    return messageDAO.findById(message_id);
                 }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -70,7 +70,7 @@ public class MessageService {
                 //return messageDAO.update(existingMessage);
             
         
-        }  
+         
       
   //  } 
 /*public Message updateMessage(int message_id, String updatedMessageText) {
@@ -85,7 +85,6 @@ public class MessageService {
     return null;
 }
  */
-        return null;
 }
 }
 

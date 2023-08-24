@@ -148,18 +148,18 @@ public class MessageDAO {
         
     }
 
-    public void update(int message_id, String updatedMessageText) {
+    public void update(int message_id, String updatedText) {
         Connection connection = ConnectionUtil.getConnection();
             try {
                 String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
                 PreparedStatement ps = connection.prepareStatement(sql);
-                ps.setString(1, updatedMessageText);
+                ps.setString(1, updatedText);
                 ps.setInt(2, message_id);
                 ps.executeUpdate();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-    
+       
         //Message updatedMessage = new Message(message.getMessage_id(), message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
    //
    
@@ -196,4 +196,4 @@ public class MessageDAO {
         return null; //was updatedMessage
     */ 
     }
-
+}
