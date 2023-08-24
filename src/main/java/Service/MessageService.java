@@ -41,6 +41,9 @@ public class MessageService {
         return null;
      }
      public Message updateMessage(int message_id, String updatedMessageText) {
+                         
+    
+        
         if (updatedMessageText != null && !updatedMessageText.trim().isEmpty()) {
             Message existingMessage = messageDAO.findById(message_id);
     
@@ -51,4 +54,16 @@ public class MessageService {
         }
         return null;
     }
+    /*public Message updateMessage(int messageId, String newMessageText) {
+    // ... [your validations and update logic here]
+
+    // Update the message
+    existingMessage.setMessage_text(newMessageText);
+    messageDAO.update(existingMessage);  // Assuming this updates the message in the database.
+
+    // Fetch the updated message from the database
+    return messageDAO.findById(messageId);
+}
+
+ */
 }

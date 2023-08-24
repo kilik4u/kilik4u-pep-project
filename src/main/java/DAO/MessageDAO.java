@@ -194,7 +194,7 @@ public class MessageDAO {
     public Message update(Message message ) {
         Connection connection = ConnectionUtil.getConnection();
 
-        Message updatedMessage = null;
+     Message updatedMessage = null;
         try {
             String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -205,26 +205,50 @@ public class MessageDAO {
             statement.setInt(4, message.getMessage_id());
 
             int rowsUpdated = statement.executeUpdate();
-            
-            if (rowsUpdated > 0) {
+         if (rowsUpdated > 0) {
+   
                 
-                // Handle the case where no rows were updated (e.g., message with the specified ID doesn't exist)
-                return null;
+               
+             return null;
                 
             
-            } else {
-                return message ;
-            }
+        } else {
+                return message;
+           }
             
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception as needed
+           e.printStackTrace();
+         
         }
 
-        return updatedMessage ;
+        return updatedMessage;
     }
-    
+    /*public Message update(Message message) {
+    String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?";
+
+    try (Connection connection = ConnectionUtil.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql)) {
+
+        statement.setInt(1, message.getPosted_by());
+        statement.setString(2, message.getMessage_text());
+        statement.setLong(3, message.getTime_posted_epoch());
+        statement.setInt(4, message.getMessage_id());
+
+        int rowsUpdated = statement.executeUpdate();
+
+        // If rows were updated, return the message, otherwise return null
+        return rowsUpdated > 0 ? message : null;
+
+    } catch (SQLException e) {
+        // Replace with proper logging or rethrow as needed
+        throw new RuntimeException("Error updating the message", e);
+    }
+}
+ */
+
+  
+ 
 
    
+    }
 
-}

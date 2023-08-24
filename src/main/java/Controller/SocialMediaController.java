@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import DAO.MessageDAO;
 import Model.Account;
 import Model.Message;
 //import DAO.AccountDAO;
@@ -170,20 +171,47 @@ public class SocialMediaController {
         
         int messageId = Integer.parseInt(context.pathParam("message_id"));
         String updatedMessageText = context.body();
-        if (updatedMessageText == null || updatedMessageText.trim().isEmpty()) {
+        if (updatedMessageText == null || updatedMessageText.trim().isEmpty() || updatedMessageText.length() > 255) {
             context.status(400).json(""); 
             return;
         }
         Message updatedMessage = messageService.updateMessage(messageId, updatedMessageText);
     
         if (updatedMessage != null) {
-            
             context.status(200).json(updatedMessage);
+           
         } else {
             context.status(400).json("");
         }
     }
 
+    /*private void updateMessageHandler(Context context) {
+    MessageService messageService = new MessageService(); // Consider using dependency injection
+
+    int messageId = Integer.parseInt(context.pathParam("message_id"));
+
+    // Assuming you're receiving a JSON payload, it's often better to map this to an object.
+    // However, for simplicity, if you're just getting plain text, the below works.
+    String updatedMessageText = context.body();
+
+    // Validation checks
+    if (updatedMessageText == null || updatedMessageText.trim().isEmpty() || updatedMessageText.length() > 255) {
+        context.status(400).json("Message text is invalid"); 
+        return;
+    }
+
+    Message updatedMessage = messageService.updateMessage(messageId, updatedMessageText);
+
+    if (updatedMessage != null) {
+        context.status(200).json(updatedMessage);
+    } else {
+        context.status(400).json("Failed to update the message");
+    }
+}
+
+
+    
+ */
     private void getAllMessagesByIdHandler(Context context) {
         MessageService messageService = new MessageService();
     
